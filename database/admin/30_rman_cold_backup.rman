@@ -1,0 +1,29 @@
+# MANUAL MAINTENANCE WINDOW ONLY. Run with: rman target / cmdfile=... log=...
+# SYSDBA/OSDBA required. This stops the ENTIRE ORCL instance, including other schemas.
+# First stop app and all writers; confirm target DBID and NOARCHIVELOG in SQL*Plus.
+# Folder must exist and Oracle service must have write access. Keep an off-machine copy.
+# Run only after the DBA reviews this file. No BACKUP PLUS ARCHIVELOG in NOARCHIVELOG.
+# Expected: backup pieces of all datafiles, current controlfile and SPFILE; final DB OPEN.
+# On error while MOUNTED: fix backup problem or ALTER DATABASE OPEN to restore service.
+# After a crash/ABORT, first open for instance recovery then clean SHUTDOWN IMMEDIATE.
+
+SHUTDOWN IMMEDIATE;
+STARTUP MOUNT;
+RUN {
+ ALLOCATE CHANNEL c1 DEVICE TYPE DISK;
+ BACKUP DATABASE
+  FORMAT 'D:\UTC\2026_2027_1\CSDL_Oracle\BTL\thi_toeic-master\.local\oracle-backup\rman\db_%d_%T_%U.bkp'
+  TAG 'TOEIC_COLD_MANUAL';
+ BACKUP SPFILE
+  FORMAT 'D:\UTC\2026_2027_1\CSDL_Oracle\BTL\thi_toeic-master\.local\oracle-backup\rman\spfile_%d_%T_%U.bkp'
+  TAG 'TOEIC_COLD_SPFILE';
+ BACKUP CURRENT CONTROLFILE
+  FORMAT 'D:\UTC\2026_2027_1\CSDL_Oracle\BTL\thi_toeic-master\.local\oracle-backup\rman\control_%d_%T_%U.bkp'
+  TAG 'TOEIC_COLD_CONTROL';
+ RELEASE CHANNEL c1;
+}
+ALTER DATABASE OPEN;
+LIST BACKUP TAG 'TOEIC_COLD_MANUAL';
+LIST BACKUP TAG 'TOEIC_COLD_CONTROL';
+LIST BACKUP TAG 'TOEIC_COLD_SPFILE';
+EXIT;

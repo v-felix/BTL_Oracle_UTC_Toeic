@@ -1,0 +1,17 @@
+# MANUAL: impdp TOEIC_BACKUP@localhost:1521/orcl PARFILE=database/admin/22_datapump_import.par
+# Password is prompted. Prerequisites: exact successful dump from export, empty clone.
+# Expected: source objects and rows restored to TOEIC_RESTORE, not to TOEIC_OWNER.
+# Restore state: validate with 23_datapump_verify.sql; optional cleanup with 91 script.
+# Do not add TABLE_EXISTS_ACTION=REPLACE or TRUNCATE to an unreviewed job.
+DIRECTORY=TOEIC_DP_DIR
+DUMPFILE=toeic_owner_manual_01.dmp
+LOGFILE=toeic_owner_manual_01_import.log
+SCHEMAS=TOEIC_OWNER
+REMAP_SCHEMA=TOEIC_OWNER:TOEIC_RESTORE
+REMAP_TABLESPACE=TOEIC_DATA:TOEIC_RESTORE_DATA
+EXCLUDE=USER
+EXCLUDE=GRANT
+TRANSFORM=OID:N
+METRICS=YES
+LOGTIME=ALL
+PARALLEL=1

@@ -1,0 +1,8 @@
+# MANUAL, NON-RESTORING CHECK. Requires an existing successful cold backup in repository.
+# OSDBA required: rman target / cmdfile=database/admin/31_rman_validate.rman log=...
+# Expected: RESTORE validation succeeds; reads backup pieces, does not overwrite datafiles.
+# Restore state: none. Validation success is not evidence that an actual restore was run.
+LIST BACKUP TAG 'TOEIC_COLD_MANUAL';
+RESTORE DATABASE FROM TAG 'TOEIC_COLD_MANUAL' PREVIEW;
+RESTORE DATABASE FROM TAG 'TOEIC_COLD_MANUAL' VALIDATE;
+EXIT;

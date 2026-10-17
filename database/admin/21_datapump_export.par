@@ -1,0 +1,15 @@
+# MANUAL: expdp TOEIC_BACKUP@localhost:1521/orcl PARFILE=database/admin/21_datapump_export.par
+# Enter password at the utility prompt, never in this file or command line.
+# Prerequisites: 20_datapump_prepare.sql; owner schema installed; app writes paused.
+# Choose a NEW filename before repeating. REUSE_DUMPFILES=NO avoids overwriting.
+# Expected: successful export log and toeic_owner_manual_01.dmp in TOEIC_DP_DIR.
+# Restore state: resume app writes after dump completes; export changes no source rows.
+SCHEMAS=TOEIC_OWNER
+DIRECTORY=TOEIC_DP_DIR
+DUMPFILE=toeic_owner_manual_01.dmp
+LOGFILE=toeic_owner_manual_01_export.log
+REUSE_DUMPFILES=NO
+FLASHBACK_TIME=SYSTIMESTAMP
+METRICS=YES
+LOGTIME=ALL
+PARALLEL=1

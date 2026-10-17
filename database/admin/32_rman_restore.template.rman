@@ -1,0 +1,25 @@
+# DESTRUCTIVE TEMPLATE. ALL COMMANDS BELOW ARE COMMENTED OUT ON PURPOSE.
+# Restore/recovery of the entire DB, not just TOEIC_OWNER. Do not run on shared ORCL
+# for a classroom demonstration. Rehearse in an isolated Oracle VM/instance clone.
+# OSDBA required. Stop all apps. Verify DBID, all destination datafile paths, and
+# exact matching cold database/controlfile/SPFILE backup set before uncommenting.
+# Prepare the same paths on the isolated machine or adapt SET NEWNAME / SWITCH.
+# Use the controlfile piece from the SAME cold backup run, not an arbitrary latest one.
+# This example assumes a usable matching SPFILE already exists and no extra
+# incremental backups are cataloged; choose only the intended consistent backup.
+# Expected: restored data at backup time, READ WRITE after OPEN RESETLOGS.
+# Committed changes AFTER that cold backup are LOST in NOARCHIVELOG.
+# There is no SQL rollback for a whole-DB restore. If it fails, keep the instance
+# stopped/mounted, preserve backups/logs and resolve with the DBA before opening.
+# After successful restore, take a NEW consistent backup in a new maintenance window.
+
+# SHUTDOWN IMMEDIATE;
+# STARTUP NOMOUNT;
+# RESTORE CONTROLFILE FROM 'REPLACE_WITH_EXACT_MATCHING_CONTROL_PIECE.bkp';
+# ALTER DATABASE MOUNT;
+# CATALOG START WITH 'REPLACE_WITH_ISOLATED_COLD_BACKUP_DIRECTORY' NOPROMPT;
+# RESTORE DATABASE FROM TAG 'TOEIC_COLD_MANUAL';
+# RECOVER DATABASE NOREDO;
+# ALTER DATABASE OPEN RESETLOGS;
+# REPORT SCHEMA;
+EXIT;
