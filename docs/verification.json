@@ -1,0 +1,371 @@
+{
+  "verifiedAt": "2026-10-17T11:17:32.324Z",
+  "summary": [
+    "Kiểm thử tích hợp Oracle thật: 23/23 ca đạt; 20/20 truy vấn SQL chạy thành công; 14/14 bảng có ít nhất 5 bản ghi.",
+    "Build React/Vite và ASP.NET Core hoàn tất, không warning hoặc error; npm audit và NuGet audit không báo gói có lỗ hổng tại thời điểm kiểm tra.",
+    "Đã kiểm tra giao diện học viên: đăng nhập, tìm đề, đổi đáp án, đánh dấu, tải lại và nộp bài. Menu di động và trang metadata Oracle đã được kiểm tra riêng.",
+    "Data Pump đã export TOEIC_OWNER và phục hồi TOEIC_RESTORE; số dòng của 14 bảng và nội dung câu hỏi khớp, các đối tượng hợp lệ. Tài khoản backup đã khóa.",
+    "Đã tạo/alter/move/drop tablespace và datafile trong sandbox, kiểm chứng user/role/profile/segment/extent; sandbox đã dọn, nguồn hợp lệ và ORCL vẫn READ WRITE.",
+    "Chưa chạy shutdown/read only/restricted ở cấp instance hoặc backup/restore vật lý RMAN trên ORCL dùng chung."
+  ],
+  "apiTests": {
+    "startedAt": "2026-10-17T11:11:04.368Z",
+    "finishedAt": "2026-10-17T11:11:13.895Z",
+    "timezone": "Asia/Saigon",
+    "baseUrl": "http://127.0.0.1:5080",
+    "runId": "1792235464368_52684",
+    "testCount": 23,
+    "passed": 23,
+    "failed": 0,
+    "results": [
+      {
+        "name": "Oracle health check returns ok",
+        "passed": true,
+        "durationMs": 3125
+      },
+      {
+        "name": "Public catalog and exam metadata omit answer keys",
+        "passed": true,
+        "durationMs": 86
+      },
+      {
+        "name": "Missing CSRF token is rejected with HTTP 400",
+        "passed": true,
+        "durationMs": 23
+      },
+      {
+        "name": "Anonymous account and admin endpoints require authentication",
+        "passed": true,
+        "durationMs": 10
+      },
+      {
+        "name": "Registration ignores injected administrator roles",
+        "passed": true,
+        "durationMs": 357
+      },
+      {
+        "name": "Student, teacher and editor policies enforce least privilege",
+        "passed": true,
+        "durationMs": 469
+      },
+      {
+        "name": "QA profile and password update affect only the authenticated account",
+        "passed": true,
+        "durationMs": 593
+      },
+      {
+        "name": "Administrator metadata and media upload validate permissions, size and signatures",
+        "passed": true,
+        "durationMs": 256
+      },
+      {
+        "name": "Administrator creates and edits QA questions with correct Part 2 choices",
+        "passed": true,
+        "durationMs": 109
+      },
+      {
+        "name": "Draft exam CRUD, duplicate question rejection and full-test structure validation",
+        "passed": true,
+        "durationMs": 81
+      },
+      {
+        "name": "Draft exams stay private and cannot start; publishing requires complete groups",
+        "passed": true,
+        "durationMs": 73
+      },
+      {
+        "name": "Questions in a published exam reject modification and deletion",
+        "passed": true,
+        "durationMs": 13
+      },
+      {
+        "name": "One active attempt per user/exam is preserved across concurrent starts",
+        "passed": true,
+        "durationMs": 26
+      },
+      {
+        "name": "A different QA account cannot read, answer or submit another account attempt",
+        "passed": true,
+        "durationMs": 251
+      },
+      {
+        "name": "Duplicate, foreign-question and invalid-choice answer payloads are rejected",
+        "passed": true,
+        "durationMs": 37
+      },
+      {
+        "name": "Answer updates replace previous choices instead of appending score entries",
+        "passed": true,
+        "durationMs": 44
+      },
+      {
+        "name": "Attempt snapshots survive draft conversion and later question answer changes",
+        "passed": true,
+        "durationMs": 33
+      },
+      {
+        "name": "Submission uses snapshot keys, caps scores, and remains idempotent",
+        "passed": true,
+        "durationMs": 46
+      },
+      {
+        "name": "QA lesson and vocabulary CRUD plus saved-word lifecycle work",
+        "passed": true,
+        "durationMs": 85
+      },
+      {
+        "name": "Oracle expiry finalizes the QA attempt and refuses late answer mutation",
+        "passed": true,
+        "durationMs": 1272
+      },
+      {
+        "name": "Deleting used QA exams/questions archives them; unused QA content deletes",
+        "passed": true,
+        "durationMs": 84
+      },
+      {
+        "name": "Disabling a QA account invalidates its existing authentication cookie",
+        "passed": true,
+        "durationMs": 32
+      },
+      {
+        "name": "All 20 Oracle example queries execute and every business table has five rows",
+        "passed": true,
+        "durationMs": 2398
+      }
+    ],
+    "resources": {
+      "users": [
+        {
+          "id": 1014,
+          "username": "qa_1792235464368_52684"
+        },
+        {
+          "id": 1015,
+          "username": "qa2_1792235464368_52684"
+        }
+      ],
+      "exams": [
+        1011,
+        1012
+      ],
+      "questions": [
+        1210,
+        1211,
+        1212,
+        1213,
+        1214
+      ],
+      "lessons": [
+        1009
+      ],
+      "vocabulary": [
+        1047
+      ],
+      "attempts": [
+        1015,
+        1016
+      ]
+    },
+    "oracleQueries": {
+      "executed": true,
+      "queryCount": 20,
+      "tableCounts": [
+        {
+          "tableName": "TOEIC_ANSWERS",
+          "rowCount": 914
+        },
+        {
+          "tableName": "TOEIC_ATTEMPTS",
+          "rowCount": 17
+        },
+        {
+          "tableName": "TOEIC_AUDIT",
+          "rowCount": 313
+        },
+        {
+          "tableName": "TOEIC_CHOICES",
+          "rowCount": 808
+        },
+        {
+          "tableName": "TOEIC_EXAMS",
+          "rowCount": 10
+        },
+        {
+          "tableName": "TOEIC_EXAM_ITEMS",
+          "rowCount": 549
+        },
+        {
+          "tableName": "TOEIC_GROUPS",
+          "rowCount": 115
+        },
+        {
+          "tableName": "TOEIC_LESSONS",
+          "rowCount": 7
+        },
+        {
+          "tableName": "TOEIC_QUESTIONS",
+          "rowCount": 209
+        },
+        {
+          "tableName": "TOEIC_ROLES",
+          "rowCount": 5
+        },
+        {
+          "tableName": "TOEIC_SAVED_WORDS",
+          "rowCount": 8
+        },
+        {
+          "tableName": "TOEIC_SCORE_SCALE",
+          "rowCount": 202
+        },
+        {
+          "tableName": "TOEIC_USERS",
+          "rowCount": 16
+        },
+        {
+          "tableName": "TOEIC_VOCABULARY",
+          "rowCount": 45
+        }
+      ],
+      "allTablesAtLeastFive": true
+    },
+    "scope": "Real HTTP requests against local ASP.NET Core API and Oracle 19c; only timestamped QA records are changed. No instance administration or physical restore is executed."
+  },
+  "backup": {
+    "physicalRmanExecuted": false,
+    "type": "Oracle Data Pump schema export and recovery",
+    "startedAt": "2026-10-17T06:36:40.1157538Z",
+    "sourceSchema": "TOEIC_OWNER",
+    "completedAt": "2026-10-17T06:38:10.3660286Z",
+    "questionPayloadMatches": true,
+    "dumpBytes": 3383296,
+    "tables": [
+      {
+        "table": "TOEIC_ROLES",
+        "source": 5,
+        "restored": 5
+      },
+      {
+        "table": "TOEIC_USERS",
+        "source": 14,
+        "restored": 14
+      },
+      {
+        "table": "TOEIC_GROUPS",
+        "source": 111,
+        "restored": 111
+      },
+      {
+        "table": "TOEIC_QUESTIONS",
+        "source": 206,
+        "restored": 206
+      },
+      {
+        "table": "TOEIC_CHOICES",
+        "source": 797,
+        "restored": 797
+      },
+      {
+        "table": "TOEIC_EXAMS",
+        "source": 9,
+        "restored": 9
+      },
+      {
+        "table": "TOEIC_EXAM_ITEMS",
+        "source": 546,
+        "restored": 546
+      },
+      {
+        "table": "TOEIC_ATTEMPTS",
+        "source": 14,
+        "restored": 14
+      },
+      {
+        "table": "TOEIC_ANSWERS",
+        "source": 902,
+        "restored": 902
+      },
+      {
+        "table": "TOEIC_LESSONS",
+        "source": 7,
+        "restored": 7
+      },
+      {
+        "table": "TOEIC_VOCABULARY",
+        "source": 45,
+        "restored": 45
+      },
+      {
+        "table": "TOEIC_SAVED_WORDS",
+        "source": 8,
+        "restored": 8
+      },
+      {
+        "table": "TOEIC_AUDIT",
+        "source": 283,
+        "restored": 283
+      },
+      {
+        "table": "TOEIC_SCORE_SCALE",
+        "source": 202,
+        "restored": 202
+      }
+    ],
+    "dumpFile": "D:\\UTC\\2026_2027_1\\CSDL_Oracle\\BTL\\thi_toeic-master\\.local\\oracle-backup\\datapump\\toeic_owner_20261017_133640.dmp",
+    "allCountsMatch": true,
+    "restoredSchema": "TOEIC_RESTORE"
+  },
+  "administration": {
+    "startedAt": "2026-10-17T11:14:41.6705801Z",
+    "completedAt": "2026-10-17T11:14:54.8813386Z",
+    "passed": true,
+    "scope": "Isolated TOEIC_ADMIN_DEMO tablespace and TOEIC_DEMO user only; no instance shutdown or physical recovery.",
+    "operations": [
+      "create/add/resize datafile",
+      "disable/enable autoextend",
+      "online datafile move and move back",
+      "sandbox tablespace read only/read write",
+      "create/revoke/grant role",
+      "create user/profile/quota; lock/unlock",
+      "permitted view SELECT and expected ORA-00942 for private table",
+      "segment/extent inspection",
+      "drop own demo user/role/profile/tablespace and datafiles"
+    ],
+    "checks": {
+      "tablespace": true,
+      "userRoleProfile": true,
+      "permittedSelect": true,
+      "deniedPrivateSelect": true,
+      "segmentsExtents": true,
+      "cleanup": true,
+      "sourceIntact": true
+    },
+    "logFile": "D:\\UTC\\2026_2027_1\\CSDL_Oracle\\BTL\\thi_toeic-master\\.local\\oracle-admin\\sandbox_20261017_181441.log",
+    "sourceTables": 14,
+    "sourceInvalidObjects": 0,
+    "finalOpenMode": "READ WRITE",
+    "instanceModeChangesExecuted": false,
+    "physicalRmanExecuted": false
+  },
+  "publication": {
+    "verifiedAt": "2026-10-17T11:17:32.1875464Z",
+    "health": "ok",
+    "database": "Oracle 19c",
+    "home": 200,
+    "spaRoute": 200,
+    "bundle": 200,
+    "audioRange": 206,
+    "passed": true
+  },
+  "build": {
+    "passed": true,
+    "warnings": 0,
+    "errors": 0
+  },
+  "dependencyAudit": {
+    "npm": 0,
+    "nuget": 0
+  },
+  "physicalRmanExecuted": false
+}

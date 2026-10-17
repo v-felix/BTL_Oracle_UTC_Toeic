@@ -1,0 +1,32 @@
+{
+    "startedAt":  "2026-10-17T11:14:41.6705801Z",
+    "completedAt":  "2026-10-17T11:14:54.8813386Z",
+    "passed":  true,
+    "scope":  "Isolated TOEIC_ADMIN_DEMO tablespace and TOEIC_DEMO user only; no instance shutdown or physical recovery.",
+    "operations":  [
+                       "create/add/resize datafile",
+                       "disable/enable autoextend",
+                       "online datafile move and move back",
+                       "sandbox tablespace read only/read write",
+                       "create/revoke/grant role",
+                       "create user/profile/quota; lock/unlock",
+                       "permitted view SELECT and expected ORA-00942 for private table",
+                       "segment/extent inspection",
+                       "drop own demo user/role/profile/tablespace and datafiles"
+                   ],
+    "checks":  {
+                   "tablespace":  true,
+                   "userRoleProfile":  true,
+                   "permittedSelect":  true,
+                   "deniedPrivateSelect":  true,
+                   "segmentsExtents":  true,
+                   "cleanup":  true,
+                   "sourceIntact":  true
+               },
+    "logFile":  "D:\\UTC\\2026_2027_1\\CSDL_Oracle\\BTL\\thi_toeic-master\\.local\\oracle-admin\\sandbox_20261017_181441.log",
+    "sourceTables":  14,
+    "sourceInvalidObjects":  0,
+    "finalOpenMode":  "READ WRITE",
+    "instanceModeChangesExecuted":  false,
+    "physicalRmanExecuted":  false
+}

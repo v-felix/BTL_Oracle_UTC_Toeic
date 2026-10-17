@@ -1,0 +1,84 @@
+{
+    "physicalRmanExecuted":  false,
+    "type":  "Oracle Data Pump schema export and recovery",
+    "startedAt":  "2026-10-17T06:36:40.1157538Z",
+    "sourceSchema":  "TOEIC_OWNER",
+    "completedAt":  "2026-10-17T06:38:10.3660286Z",
+    "questionPayloadMatches":  true,
+    "dumpBytes":  3383296,
+    "tables":  [
+                   {
+                       "table":  "TOEIC_ROLES",
+                       "source":  5,
+                       "restored":  5
+                   },
+                   {
+                       "table":  "TOEIC_USERS",
+                       "source":  14,
+                       "restored":  14
+                   },
+                   {
+                       "table":  "TOEIC_GROUPS",
+                       "source":  111,
+                       "restored":  111
+                   },
+                   {
+                       "table":  "TOEIC_QUESTIONS",
+                       "source":  206,
+                       "restored":  206
+                   },
+                   {
+                       "table":  "TOEIC_CHOICES",
+                       "source":  797,
+                       "restored":  797
+                   },
+                   {
+                       "table":  "TOEIC_EXAMS",
+                       "source":  9,
+                       "restored":  9
+                   },
+                   {
+                       "table":  "TOEIC_EXAM_ITEMS",
+                       "source":  546,
+                       "restored":  546
+                   },
+                   {
+                       "table":  "TOEIC_ATTEMPTS",
+                       "source":  14,
+                       "restored":  14
+                   },
+                   {
+                       "table":  "TOEIC_ANSWERS",
+                       "source":  902,
+                       "restored":  902
+                   },
+                   {
+                       "table":  "TOEIC_LESSONS",
+                       "source":  7,
+                       "restored":  7
+                   },
+                   {
+                       "table":  "TOEIC_VOCABULARY",
+                       "source":  45,
+                       "restored":  45
+                   },
+                   {
+                       "table":  "TOEIC_SAVED_WORDS",
+                       "source":  8,
+                       "restored":  8
+                   },
+                   {
+                       "table":  "TOEIC_AUDIT",
+                       "source":  283,
+                       "restored":  283
+                   },
+                   {
+                       "table":  "TOEIC_SCORE_SCALE",
+                       "source":  202,
+                       "restored":  202
+                   }
+               ],
+    "dumpFile":  "D:\\UTC\\2026_2027_1\\CSDL_Oracle\\BTL\\thi_toeic-master\\.local\\oracle-backup\\datapump\\toeic_owner_20261017_133640.dmp",
+    "allCountsMatch":  true,
+    "restoredSchema":  "TOEIC_RESTORE"
+}

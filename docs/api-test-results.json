@@ -1,0 +1,224 @@
+{
+  "startedAt": "2026-10-17T11:11:04.368Z",
+  "finishedAt": "2026-10-17T11:11:13.895Z",
+  "timezone": "Asia/Saigon",
+  "baseUrl": "http://127.0.0.1:5080",
+  "runId": "1792235464368_52684",
+  "testCount": 23,
+  "passed": 23,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Oracle health check returns ok",
+      "passed": true,
+      "durationMs": 3125
+    },
+    {
+      "name": "Public catalog and exam metadata omit answer keys",
+      "passed": true,
+      "durationMs": 86
+    },
+    {
+      "name": "Missing CSRF token is rejected with HTTP 400",
+      "passed": true,
+      "durationMs": 23
+    },
+    {
+      "name": "Anonymous account and admin endpoints require authentication",
+      "passed": true,
+      "durationMs": 10
+    },
+    {
+      "name": "Registration ignores injected administrator roles",
+      "passed": true,
+      "durationMs": 357
+    },
+    {
+      "name": "Student, teacher and editor policies enforce least privilege",
+      "passed": true,
+      "durationMs": 469
+    },
+    {
+      "name": "QA profile and password update affect only the authenticated account",
+      "passed": true,
+      "durationMs": 593
+    },
+    {
+      "name": "Administrator metadata and media upload validate permissions, size and signatures",
+      "passed": true,
+      "durationMs": 256
+    },
+    {
+      "name": "Administrator creates and edits QA questions with correct Part 2 choices",
+      "passed": true,
+      "durationMs": 109
+    },
+    {
+      "name": "Draft exam CRUD, duplicate question rejection and full-test structure validation",
+      "passed": true,
+      "durationMs": 81
+    },
+    {
+      "name": "Draft exams stay private and cannot start; publishing requires complete groups",
+      "passed": true,
+      "durationMs": 73
+    },
+    {
+      "name": "Questions in a published exam reject modification and deletion",
+      "passed": true,
+      "durationMs": 13
+    },
+    {
+      "name": "One active attempt per user/exam is preserved across concurrent starts",
+      "passed": true,
+      "durationMs": 26
+    },
+    {
+      "name": "A different QA account cannot read, answer or submit another account attempt",
+      "passed": true,
+      "durationMs": 251
+    },
+    {
+      "name": "Duplicate, foreign-question and invalid-choice answer payloads are rejected",
+      "passed": true,
+      "durationMs": 37
+    },
+    {
+      "name": "Answer updates replace previous choices instead of appending score entries",
+      "passed": true,
+      "durationMs": 44
+    },
+    {
+      "name": "Attempt snapshots survive draft conversion and later question answer changes",
+      "passed": true,
+      "durationMs": 33
+    },
+    {
+      "name": "Submission uses snapshot keys, caps scores, and remains idempotent",
+      "passed": true,
+      "durationMs": 46
+    },
+    {
+      "name": "QA lesson and vocabulary CRUD plus saved-word lifecycle work",
+      "passed": true,
+      "durationMs": 85
+    },
+    {
+      "name": "Oracle expiry finalizes the QA attempt and refuses late answer mutation",
+      "passed": true,
+      "durationMs": 1272
+    },
+    {
+      "name": "Deleting used QA exams/questions archives them; unused QA content deletes",
+      "passed": true,
+      "durationMs": 84
+    },
+    {
+      "name": "Disabling a QA account invalidates its existing authentication cookie",
+      "passed": true,
+      "durationMs": 32
+    },
+    {
+      "name": "All 20 Oracle example queries execute and every business table has five rows",
+      "passed": true,
+      "durationMs": 2398
+    }
+  ],
+  "resources": {
+    "users": [
+      {
+        "id": 1014,
+        "username": "qa_1792235464368_52684"
+      },
+      {
+        "id": 1015,
+        "username": "qa2_1792235464368_52684"
+      }
+    ],
+    "exams": [
+      1011,
+      1012
+    ],
+    "questions": [
+      1210,
+      1211,
+      1212,
+      1213,
+      1214
+    ],
+    "lessons": [
+      1009
+    ],
+    "vocabulary": [
+      1047
+    ],
+    "attempts": [
+      1015,
+      1016
+    ]
+  },
+  "oracleQueries": {
+    "executed": true,
+    "queryCount": 20,
+    "tableCounts": [
+      {
+        "tableName": "TOEIC_ANSWERS",
+        "rowCount": 914
+      },
+      {
+        "tableName": "TOEIC_ATTEMPTS",
+        "rowCount": 17
+      },
+      {
+        "tableName": "TOEIC_AUDIT",
+        "rowCount": 313
+      },
+      {
+        "tableName": "TOEIC_CHOICES",
+        "rowCount": 808
+      },
+      {
+        "tableName": "TOEIC_EXAMS",
+        "rowCount": 10
+      },
+      {
+        "tableName": "TOEIC_EXAM_ITEMS",
+        "rowCount": 549
+      },
+      {
+        "tableName": "TOEIC_GROUPS",
+        "rowCount": 115
+      },
+      {
+        "tableName": "TOEIC_LESSONS",
+        "rowCount": 7
+      },
+      {
+        "tableName": "TOEIC_QUESTIONS",
+        "rowCount": 209
+      },
+      {
+        "tableName": "TOEIC_ROLES",
+        "rowCount": 5
+      },
+      {
+        "tableName": "TOEIC_SAVED_WORDS",
+        "rowCount": 8
+      },
+      {
+        "tableName": "TOEIC_SCORE_SCALE",
+        "rowCount": 202
+      },
+      {
+        "tableName": "TOEIC_USERS",
+        "rowCount": 16
+      },
+      {
+        "tableName": "TOEIC_VOCABULARY",
+        "rowCount": 45
+      }
+    ],
+    "allTablesAtLeastFive": true
+  },
+  "scope": "Real HTTP requests against local ASP.NET Core API and Oracle 19c; only timestamped QA records are changed. No instance administration or physical restore is executed."
+}

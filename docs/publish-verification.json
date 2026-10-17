@@ -1,0 +1,10 @@
+{
+  "verifiedAt": "2026-10-17T11:17:32.1875464Z",
+  "health": "ok",
+  "database": "Oracle 19c",
+  "home": 200,
+  "spaRoute": 200,
+  "bundle": 200,
+  "audioRange": 206,
+  "passed": true
+}
