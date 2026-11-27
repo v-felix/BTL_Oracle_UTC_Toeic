@@ -802,6 +802,7 @@ export function Vocabulary() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Tìm từ hoặc nghĩa…"
+            aria-label="Tìm từ vựng theo từ hoặc nghĩa"
           />
         </label>
       </div>
