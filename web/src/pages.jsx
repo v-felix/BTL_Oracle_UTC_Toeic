@@ -21,8 +21,15 @@ import {
   Award,
   Layers,
   CalendarDays,
+  Volume2,
+  Tags,
+  BarChart3,
+  ListChecks,
 } from "lucide-react";
 import { api, resetCsrf } from "./api";
+import { CardArt, TrackPattern, Wordmark, Photo } from "./art";
+import { examPhoto } from "./photos";
+import { CountUp, RevealText } from "./motion";
 import {
   useAuth,
   useToast,
@@ -31,6 +38,7 @@ import {
   ErrorBox,
   Empty,
   PageHead,
+  PageBanner,
   Modal,
   date,
   kindName,
@@ -38,34 +46,44 @@ import {
   partNames,
 } from "./ui";
 
+const kindArt = { FULL_TEST: 2, MINI_TEST: 0, PRACTICE: 3 };
 export function ExamCard({ exam, index = 0 }) {
   return (
     <article className="exam-card">
-      <div className={"exam-card-art art-" + (index % 4)}>
-        <span className="exam-art-label">UTC / ENGLISH PRACTICE</span>
-        <Headphones size={58} strokeWidth={1.2} />
-        <span className="exam-art-number">
-          {String(index + 1).padStart(2, "0")}
-        </span>
-      </div>
+      <Link
+        className="exam-card-art"
+        to={"/exams/" + exam.examId}
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        <Photo
+          name={examPhoto(exam)}
+          width={720}
+          fallback={<CardArt variant={kindArt[exam.kind] ?? index} />}
+        />
+        <span className="card-chip">{kindName(exam.kind)}</span>
+      </Link>
       <div className="exam-card-body">
-        <span className="badge">{kindName(exam.kind)}</span>
-        <h3>
-          <Link to={"/exams/" + exam.examId}>{exam.title}</Link>
-        </h3>
-        <p>{exam.description}</p>
         <div className="exam-meta">
           <span>
             <Layers size={15} />
-            {exam.questionCount} câu
+            {exam.questionCount} câu hỏi
           </span>
           <span>
             <Clock size={15} />
             {exam.durationMinutes} phút
           </span>
         </div>
-        <Link className="exam-card-link" to={"/exams/" + exam.examId}>
-          Xem chi tiết <ArrowUpRight size={18} />
+        <h3>
+          <Link to={"/exams/" + exam.examId}>{exam.title}</Link>
+        </h3>
+        <p>{exam.description}</p>
+        <Link
+          className="exam-card-link"
+          to={"/exams/" + exam.examId}
+          aria-label={"Xem chi tiết " + exam.title}
+        >
+          Xem chi tiết <ArrowRight size={17} />
         </Link>
       </div>
     </article>
@@ -77,83 +95,82 @@ export function Home() {
     exams = useApi("/exams");
   return (
     <>
-      <PageHead
-        eyebrow="MỖI NGÀY MỘT CHÚT, TƯƠNG LAI MỘT BƯỚC"
-        title={
-          user
-            ? `Chào ${user.fullName.split(" ").pop()}, cùng học nhé!`
-            : "Hành trình TOEIC, bắt đầu từ bạn."
-        }
-        description="Một không gian để ôn luyện có kế hoạch và nhìn thấy mình tiến bộ."
-      />
       <section className="hero">
-        <div className="hero-copy">
-          <span className="hero-tag">
-            <span />
-            YOUR NEXT CHAPTER STARTS HERE
-          </span>
-          <h2>
-            Học có mục tiêu.
-            <br />
-            Thi thêm <em>tự tin.</em>
-          </h2>
-          <p>
-            Luyện đủ 7 phần, làm đề theo thời gian thực và hiểu rõ từng đáp án.
-            Từng bước nhỏ đều được ghi nhận.
-          </p>
-          <div className="hero-actions">
-            <Link className="btn cream" to="/exams">
-              Chọn đề thi ngay <ArrowUpRight size={18} />
-            </Link>
-            <Link className="text-link light" to="/learning">
-              Khám phá bài học <ArrowRight size={17} />
-            </Link>
-          </div>
-          <div className="hero-bottom">
-            <span>01 — Học kiến thức</span>
-            <span>02 — Luyện mỗi ngày</span>
-            <span>03 — Đo tiến bộ</span>
-          </div>
-        </div>
-        <div className="hero-visual" aria-hidden="true">
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-          <div className="target-card">
-            <span>MỤC TIÊU CỦA BẠN</span>
-            <div className="score-orbit">
-              <div>
-                <strong>
-                  {user?.targetScore || 650}
-                  <small>+</small>
-                </strong>
-                <span>TOEIC SCORE</span>
-              </div>
-            </div>
-            <div className="target-card-footer">
-              <Target size={17} />
-              <span>Bắt đầu từ hôm nay</span>
+        <Photo name="hero" className="hero-photo" width={1800} eager />
+        <div className="hero-shade" />
+        <TrackPattern overlay />
+        <div className="halftone" aria-hidden="true" />
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <span className="hero-kicker">
+              {user
+                ? "Chào mừng trở lại, " + user.fullName.split(" ").pop()
+                : "Hệ thống luyện thi TOEIC · ĐH Giao thông vận tải"}
+            </span>
+            <h1 aria-label="Luyện thi TOEIC có lộ trình, đo tiến bộ bằng dữ liệu">
+              <span aria-hidden="true">
+                <RevealText
+                  text="Luyện thi TOEIC có lộ trình, đo tiến bộ bằng dữ liệu"
+                  delay={150}
+                />
+              </span>
+            </h1>
+            <p>
+              Ngân hàng 200 câu hỏi đủ 7 phần thi, làm bài theo thời gian thực
+              và xem lại đáp án kèm giải thích cho từng câu.
+            </p>
+            <div className="hero-actions">
+              <Link className="btn btn-glow" to="/exams">
+                Bắt đầu luyện đề <ArrowRight size={18} />
+              </Link>
+              <Link className="btn ghost-light" to="/learning">
+                Xem học liệu
+              </Link>
             </div>
           </div>
-          <div className="floating-tag">
-            <CheckCircle2 size={18} />
-            Sẵn sàng cho bước tiếp theo
-          </div>
-          <span className="hero-spark">✳</span>
+          <aside className="hero-panel" aria-label="Mục tiêu điểm">
+            <span>Mục tiêu của bạn</span>
+            <strong>
+              <CountUp value={user?.targetScore || 650} />
+              <small>/ 990</small>
+            </strong>
+            <ul>
+              <li>
+                <CheckCircle2 size={16} />
+                Listening và Reading, 7 phần thi
+              </li>
+              <li>
+                <CheckCircle2 size={16} />
+                Chấm điểm tự động trên Oracle
+              </li>
+              <li>
+                <CheckCircle2 size={16} />
+                Lưu tiến độ, làm tiếp bất kỳ lúc nào
+              </li>
+            </ul>
+            <Link to={user ? "/profile" : "/register"} className="text-link">
+              {user ? "Cập nhật mục tiêu" : "Tạo tài khoản miễn phí"}
+              <ArrowRight size={16} />
+            </Link>
+          </aside>
         </div>
       </section>
       <div className="stat-grid">
         {[
           [stats.data?.exams, "Đề thi sẵn sàng", Headphones, "sage"],
-          [stats.data?.questions, "Câu hỏi theo 7 phần", Layers, "peach"],
+          [stats.data?.questions, "Câu hỏi, đủ 7 Part", Layers, "peach"],
           [stats.data?.lessons, "Bài học nền tảng", BookOpen, "lavender"],
           [stats.data?.words, "Từ vựng công sở", Bookmark, "sand"],
-        ].map(([v, label, Icon, color]) => (
+        ].map(([v, label, Icon, color], i) => (
           <div className="stat-card" key={label}>
             <span className={"stat-icon " + color}>
-              <Icon size={22} />
+              <Icon size={20} />
             </span>
+
             <div>
-              <strong>{v ?? "—"}</strong>
+              <strong>
+                <CountUp value={v} />
+              </strong>
               <span>{label}</span>
             </div>
           </div>
@@ -176,8 +193,8 @@ export function Home() {
       <section>
         <div className="section-head">
           <div>
-            <span className="eyebrow">CHỌN NHỊP HỌC CỦA BẠN</span>
-            <h2>Bắt đầu với một đề thi</h2>
+            <span className="eyebrow">Luyện thi</span>
+            <h2>Đề thi nổi bật</h2>
           </div>
           <Link className="text-link" to="/exams">
             Xem tất cả <ArrowRight size={18} />
@@ -196,21 +213,32 @@ export function Home() {
         )}
       </section>
       <section className="learning-band">
-        <div>
-          <span className="eyebrow">LỘ TRÌNH RÕ RÀNG</span>
-          <h2>7 phần thi. Một mục tiêu.</h2>
-          <p>Hiểu cấu trúc trước, luyện đúng trọng tâm sau.</p>
-          <Link className="btn secondary" to="/learning">
-            Vào góc học tập <ArrowRight size={17} />
+        <div className="halftone" aria-hidden="true" />
+        <div className="learning-band-head">
+          <span className="eyebrow">Cấu trúc bài thi</span>
+          <h2>7 phần thi TOEIC Listening và Reading</h2>
+          <p>
+            Nắm cấu trúc và chiến lược của từng phần trước, sau đó luyện tập
+            đúng trọng tâm.
+          </p>
+          <Link className="text-link" to="/learning">
+            Vào học liệu <ArrowRight size={17} />
           </Link>
         </div>
         <div className="part-path">
           {partNames.map((name, i) => (
             <Link key={name} to="/learning">
-              <b>{i + 1}</b>
+              <b>Part {i + 1}</b>
               <span>{name}</span>
+              <small>{i < 4 ? "Listening" : "Reading"}</small>
+              <ArrowRight size={17} />
             </Link>
           ))}
+          <Link to="/exams" className="part-path-all">
+            <ArrowUpRight size={20} />
+            <span>Luyện đề đủ 7 phần</span>
+            <small>Full test 200 câu, 120 phút</small>
+          </Link>
         </div>
       </section>
     </>
@@ -229,24 +257,26 @@ function Progress() {
           <h2>Nhịp học của bạn</h2>
           <span className="badge sage">
             <TrendingUp size={13} />
-            Đang tiến bước
+            Đang tiến bộ
           </span>
         </div>
         <div className="personal-metrics">
           <div>
-            <strong>{data.summary.completedCount}</strong>
+            <strong>
+              <CountUp value={data.summary.completedCount} />
+            </strong>
             <span>Bài đã hoàn thành</span>
           </div>
           <div>
             <strong>
-              {best}
+              <CountUp value={best} />
               <small> / 990</small>
             </strong>
             <span>Điểm tốt nhất</span>
           </div>
           <div>
             <strong>
-              {Math.round(data.summary.studySeconds / 60)}
+              <CountUp value={Math.round(data.summary.studySeconds / 60)} />
               <small> phút</small>
             </strong>
             <span>Thời gian luyện tập</span>
@@ -275,7 +305,7 @@ function Progress() {
         <div className="daily-icon">
           <Flame size={26} />
         </div>
-        <span className="eyebrow">MỘT GỢI Ý NHỎ</span>
+        <span className="eyebrow">Gợi ý hôm nay</span>
         <h3>Giữ nhịp, đừng vội.</h3>
         <p>
           {data.parts.length
@@ -300,11 +330,29 @@ export function Exams() {
   );
   return (
     <>
-      <PageHead
-        eyebrow="PRACTICE MAKES PROGRESS"
+      <PageBanner
+        eyebrow="Luyện thi"
         title="Thư viện đề thi"
-        description="Chọn một bài vừa sức. Hoàn thành một bước tiến mới."
-      />
+        description="Full test 200 câu, mini test và các bộ luyện theo từng phần. Chọn một bài vừa sức và bắt đầu."
+        photo="exams"
+      >
+        {state.data && (
+          <div className="banner-stats">
+            {[
+              [state.data.length, "đề đang mở"],
+              [state.data.filter((e) => e.kind === "FULL_TEST").length, "full test"],
+              [state.data.reduce((n, e) => n + e.questionCount, 0), "câu hỏi luyện tập"],
+            ].map(([v, l]) => (
+              <div key={l}>
+                <strong>
+                  <CountUp value={v} />
+                </strong>
+                <span>{l}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </PageBanner>
       <div className="filter-bar">
         <div className="tabs">
           {[
@@ -423,7 +471,7 @@ export function ExamDetail() {
         </section>
         <aside className="panel start-panel">
           <div className="start-icon">
-            <Headphones size={38} />
+            <Headphones size={26} />
           </div>
           <h2>Sẵn sàng bắt đầu?</h2>
           <p>Chọn một nơi yên tĩnh và kiểm tra âm thanh trước khi làm bài.</p>
@@ -507,30 +555,23 @@ export function AuthPage({ register = false }) {
   return (
     <div className="auth-layout">
       <aside className="auth-story">
-        <Link className="brand light-brand" to="/">
-          <span className="brand-icon">
-            <GraduationCap />
-          </span>
-          <span>
-            UTC <b>TOEIC</b>
-          </span>
-        </Link>
-        <div>
-          <span className="hero-tag">A LITTLE EVERY DAY</span>
-          <h1>
-            Tự tin hơn,
-            <br />
-            từng ngày một.
-          </h1>
-          <p>
-            Hành trình chinh phục TOEIC bắt đầu từ những lần bạn chọn không bỏ
-            cuộc.
-          </p>
-          <div className="auth-parts">
-            LISTENING <span>+</span> READING <span>=</span> YOUR NEXT STEP
+        <Photo name="auth" className="auth-photo" width={1400} eager />
+        <div className="hero-shade" />
+        <TrackPattern overlay />
+        <div className="auth-story-content">
+          <Link className="brand light-brand" to="/">
+            <Wordmark light />
+          </Link>
+          <div>
+            <span className="hero-kicker">Hệ thống luyện thi TOEIC</span>
+            <h1>Mỗi lần luyện tập là một bước gần hơn tới mục tiêu.</h1>
+            <p>
+              Đăng nhập để tiếp tục bài đang làm, xem lại kết quả và theo dõi
+              tiến bộ của bạn qua từng phần thi.
+            </p>
           </div>
+          <small>Dành cho sinh viên Trường Đại học Giao thông vận tải</small>
         </div>
-        <small>Không gian ôn luyện dành cho sinh viên ĐHGTVT.</small>
       </aside>
       <main className="auth-main">
         <Link className="back-link" to="/">
@@ -538,7 +579,7 @@ export function AuthPage({ register = false }) {
           Về trang chủ
         </Link>
         <div className="auth-form">
-          <span className="eyebrow">WELCOME TO YOUR LEARNING SPACE</span>
+          <span className="eyebrow">{register ? "Đăng ký tài khoản" : "Đăng nhập"}</span>
           <h1>{register ? "Tạo tài khoản mới" : "Chào mừng bạn trở lại"}</h1>
           <p>
             {register
@@ -669,11 +710,33 @@ export function Learning() {
   const s = useApi("/lessons");
   return (
     <>
-      <PageHead
-        eyebrow="BUILD YOUR FOUNDATION"
+      <PageBanner
+        eyebrow="Học tập"
         title="Góc học tập"
-        description="Hiểu cách làm trước khi làm nhiều. Bắt đầu từ phần bạn muốn tiến bộ."
-      />
+        description="Chiến lược và lưu ý cho từng phần thi. Hiểu cách làm trước khi làm nhiều."
+        photo="learning"
+      >
+        <div className="banner-stats">
+          <div>
+            <strong>4</strong>
+            <span>phần Listening</span>
+          </div>
+          <div>
+            <strong>3</strong>
+            <span>phần Reading</span>
+          </div>
+          {s.data && (
+            <div>
+              <strong>
+                <CountUp
+                  value={s.data.reduce((n, x) => n + x.durationMinutes, 0)}
+                />
+              </strong>
+              <span>phút đọc</span>
+            </div>
+          )}
+        </div>
+      </PageBanner>
       {s.loading ? (
         <Loading />
       ) : s.error ? (
@@ -682,15 +745,20 @@ export function Learning() {
         <div className="lesson-grid">
           {s.data.map((x, i) => (
             <Link className="lesson-card" to={"/learning/" + x.id} key={x.id}>
-              <div className={"lesson-icon art-" + (i % 4)}>
-                {x.partNo <= 4 ? (
-                  <Headphones size={28} />
-                ) : (
-                  <BookOpen size={28} />
-                )}
+              <div className="lesson-icon">
+                <Photo
+                  name={"part-" + x.partNo}
+                  width={720}
+                  fallback={<CardArt variant={x.partNo <= 4 ? 0 : 1} />}
+                />
+                <span className="card-chip">
+                  {x.partNo <= 4 ? "Listening" : "Reading"}
+                </span>
+                <b className="lesson-part">Part {x.partNo}</b>
               </div>
               <span className="eyebrow">
-                PART {x.partNo} · {x.durationMinutes} PHÚT
+                {x.durationMinutes} phút ·{" "}
+                {x.partNo <= 4 ? "Listening" : "Reading"}
               </span>
               <h2>{x.title}</h2>
               <p>{x.summary}</p>
@@ -717,8 +785,12 @@ export function Lesson() {
         Góc học tập
       </Link>
       <article className="lesson-detail panel">
+        <div className="lesson-cover">
+          <Photo name={"part-" + x.partNo} width={1400} eager />
+        </div>
+
         <span className="eyebrow">
-          PART {x.partNo} · {x.durationMinutes} PHÚT ĐỌC
+          Part {x.partNo} · {x.durationMinutes} phút đọc
         </span>
         <h1>{x.title}</h1>
         <p className="lead">{x.summary}</p>
@@ -734,20 +806,39 @@ export function Lesson() {
     </>
   );
 }
+const topicTones = ["navy", "red", "teal", "amber", "violet", "slate"];
+function speak(text) {
+  try {
+    const synth = window.speechSynthesis;
+    if (!synth) return false;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-US";
+    u.rate = 0.9;
+    synth.speak(u);
+    return true;
+  } catch {
+    return false;
+  }
+}
 export function Vocabulary() {
   const [search, setSearch] = useState(""),
     [topic, setTopic] = useState(""),
     [saved, setSaved] = useState(false),
-    [flipped, setFlipped] = useState({});
+    [hidden, setHidden] = useState({}),
+    [hideAll, setHideAll] = useState(false);
   const s = useApi("/vocabulary"),
     { user } = useAuth(),
     toast = useToast();
+  const topics = [...new Set(s.data?.map((x) => x.topic) || [])];
+  const tone = (t) => topicTones[Math.max(0, topics.indexOf(t)) % topicTones.length];
   const words = s.data?.filter(
     (w) =>
       (!topic || w.topic === topic) &&
       (!saved || w.saved) &&
       (w.word + " " + w.meaning).toLowerCase().includes(search.toLowerCase()),
   );
+  const savedCount = s.data?.filter((w) => w.saved).length || 0;
   async function save(w) {
     if (!user) {
       toast("Đăng nhập để lưu từ vào sổ tay.", "error");
@@ -764,14 +855,39 @@ export function Vocabulary() {
       toast(e.message, "error");
     }
   }
+  const isHidden = (w) => (hidden[w.id] ?? hideAll);
   return (
     <>
-      <PageHead
-        eyebrow="SMALL WORDS, BIG PROGRESS"
+      <PageBanner
+        eyebrow="Học tập"
         title="Sổ tay từ vựng"
-        description="Từ vựng công sở thường gặp, có ví dụ để bạn nhớ theo ngữ cảnh."
-      />
-      <div className="filter-bar">
+        description="Từ vựng công sở thường gặp trong TOEIC, có phiên âm, ví dụ và phát âm để bạn nhớ theo ngữ cảnh."
+        photo="vocabulary"
+      >
+        {s.data && (
+          <div className="banner-stats">
+            <div>
+              <strong>
+                <CountUp value={s.data.length} />
+              </strong>
+              <span>từ vựng</span>
+            </div>
+            <div>
+              <strong>
+                <CountUp value={topics.length} />
+              </strong>
+              <span>chủ đề</span>
+            </div>
+            <div>
+              <strong>
+                <CountUp value={savedCount} />
+              </strong>
+              <span>đã lưu</span>
+            </div>
+          </div>
+        )}
+      </PageBanner>
+      <div className="vocab-toolbar">
         <div className="tabs">
           <button
             className={!saved ? "active" : ""}
@@ -783,67 +899,114 @@ export function Vocabulary() {
             className={saved ? "active" : ""}
             onClick={() => setSaved(true)}
           >
-            Đã lưu
+            <Bookmark size={15} /> Đã lưu ({savedCount})
           </button>
         </div>
-        <select
-          aria-label="Lọc chủ đề"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-        >
-          <option value="">Mọi chủ đề</option>
-          {[...new Set(s.data?.map((x) => x.topic))].map((t) => (
-            <option key={t}>{t}</option>
-          ))}
-        </select>
         <label className="search">
           <Search size={17} />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Tìm từ hoặc nghĩa…"
+            aria-label="Tìm từ vựng"
           />
         </label>
+        <button
+          className={"btn small " + (hideAll ? "" : "secondary")}
+          onClick={() => {
+            setHideAll(!hideAll);
+            setHidden({});
+          }}
+        >
+          {hideAll ? <Eye size={16} /> : <EyeOff size={16} />}
+          {hideAll ? "Hiện tất cả nghĩa" : "Chế độ tự kiểm tra"}
+        </button>
+      </div>
+      <div className="topic-chips" role="group" aria-label="Lọc theo chủ đề">
+        <button
+          className={!topic ? "active" : ""}
+          onClick={() => setTopic("")}
+        >
+          <Tags size={15} /> Mọi chủ đề
+          <small>{s.data?.length ?? 0}</small>
+        </button>
+        {topics.map((t) => (
+          <button
+            key={t}
+            className={"tone-" + tone(t) + (topic === t ? " active" : "")}
+            onClick={() => setTopic(topic === t ? "" : t)}
+          >
+            <i />
+            {t}
+            <small>{s.data.filter((x) => x.topic === t).length}</small>
+          </button>
+        ))}
       </div>
       {s.loading ? (
         <Loading />
       ) : s.error ? (
         <ErrorBox message={s.error} retry={s.reload} />
       ) : words.length ? (
-        <div className="word-grid">
-          {words.map((w) => (
-            <article className="word-card" key={w.id}>
-              <div className="word-head">
-                <span className="badge">{w.topic}</span>
+        <>
+          <p className="result-count">{words.length} từ phù hợp</p>
+          <div className="word-grid">
+            {words.map((w) => (
+              <article className={"word-card tone-" + tone(w.topic)} key={w.id}>
+                <div className="word-head">
+                  <span className="word-topic">{w.topic}</span>
+                  <div className="word-actions">
+                    <button
+                      className="icon-btn"
+                      aria-label={"Nghe phát âm " + w.word}
+                      title="Nghe phát âm"
+                      onClick={() =>
+                        speak(w.word) ||
+                        toast("Trình duyệt chưa hỗ trợ đọc phát âm.", "error")
+                      }
+                    >
+                      <Volume2 size={18} />
+                    </button>
+                    <button
+                      className={"icon-btn " + (w.saved ? "is-saved" : "")}
+                      aria-label={w.saved ? "Bỏ lưu " + w.word : "Lưu " + w.word}
+                      title={w.saved ? "Bỏ lưu" : "Lưu vào sổ tay"}
+                      onClick={() => save(w)}
+                    >
+                      <Bookmark
+                        size={18}
+                        fill={w.saved ? "currentColor" : "none"}
+                      />
+                    </button>
+                  </div>
+                </div>
+                <h2>{w.word}</h2>
+                <span className="phonetic">{w.pronunciation}</span>
                 <button
-                  className={"icon-btn " + (w.saved ? "is-saved" : "")}
-                  aria-label={w.saved ? "Bỏ lưu " + w.word : "Lưu " + w.word}
-                  onClick={() => save(w)}
+                  className={"word-meaning" + (isHidden(w) ? " is-hidden" : "")}
+                  onClick={() =>
+                    setHidden((a) => ({ ...a, [w.id]: !isHidden(w) }))
+                  }
+                  aria-label={
+                    isHidden(w) ? "Hiện nghĩa của " + w.word : "Ẩn nghĩa của " + w.word
+                  }
                 >
-                  <Bookmark
-                    size={20}
-                    fill={w.saved ? "currentColor" : "none"}
-                  />
+                  <span>{w.meaning}</span>
+                  {isHidden(w) && <em>Nhấn để xem nghĩa</em>}
                 </button>
-              </div>
-              <h2>{w.word}</h2>
-              <span className="phonetic">{w.pronunciation}</span>
-              <p className="word-meaning">
-                {flipped[w.id] ? "••••••" : w.meaning}
-              </p>
-              <blockquote>{w.example}</blockquote>
-              <button
-                className="text-link small"
-                onClick={() => setFlipped((a) => ({ ...a, [w.id]: !a[w.id] }))}
-              >
-                {flipped[w.id]
-                  ? "Hiện nghĩa để kiểm tra"
-                  : "Ẩn nghĩa và tự nhớ lại"}
-                <ArrowRight size={14} />
-              </button>
-            </article>
-          ))}
-        </div>
+                <blockquote>
+                  {w.example}
+                  <button
+                    className="example-audio"
+                    aria-label="Nghe câu ví dụ"
+                    onClick={() => speak(w.example)}
+                  >
+                    <Volume2 size={14} />
+                  </button>
+                </blockquote>
+              </article>
+            ))}
+          </div>
+        </>
       ) : (
         <Empty
           title={saved ? "Sổ tay đang trống" : "Chưa tìm thấy từ"}
@@ -857,84 +1020,244 @@ export function Vocabulary() {
     </>
   );
 }
+function ScoreChart({ items, target }) {
+  if (items.length < 1) return null;
+  const W = 720,
+    H = 240,
+    pad = { l: 44, r: 16, t: 18, b: 34 };
+  const iw = W - pad.l - pad.r,
+    ih = H - pad.t - pad.b;
+  const step = iw / items.length;
+  const bw = Math.min(46, step * 0.56);
+  const y = (v) => pad.t + ih - (v / 990) * ih;
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="score-chart"
+      role="img"
+      aria-label="Biểu đồ điểm các lượt đã hoàn thành"
+    >
+      {[0, 250, 500, 750, 990].map((v) => (
+        <g key={v}>
+          <line x1={pad.l} x2={W - pad.r} y1={y(v)} y2={y(v)} className="grid" />
+          <text x={pad.l - 8} y={y(v) + 4} textAnchor="end" className="axis">
+            {v}
+          </text>
+        </g>
+      ))}
+      {items.map((a, i) => {
+        const x = pad.l + step * i + (step - bw) / 2;
+        return (
+          <g key={a.id} className="bar" style={{ "--i": i }}>
+            <rect x={x} y={y(a.total)} width={bw} height={pad.t + ih - y(a.total)} />
+            <text x={x + bw / 2} y={y(a.total) - 6} textAnchor="middle" className="value">
+              {a.total}
+            </text>
+            <text x={x + bw / 2} y={H - 12} textAnchor="middle" className="axis">
+              {a.label}
+            </text>
+          </g>
+        );
+      })}
+      {target ? (
+        <g className="target">
+          <line x1={pad.l} x2={W - pad.r} y1={y(target)} y2={y(target)} />
+          <text x={W - pad.r} y={y(target) - 6} textAnchor="end">
+            Mục tiêu {target}
+          </text>
+        </g>
+      ) : null}
+    </svg>
+  );
+}
 export function HistoryPage() {
-  const s = useApi("/history");
+  const s = useApi("/history"),
+    { user } = useAuth();
+  const done = (s.data || []).filter((a) => a.status !== "IN_PROGRESS");
+  const totals = done.map((a) => a.listeningScore + a.readingScore);
+  const best = totals.length ? Math.max(...totals) : 0;
+  const avg = totals.length
+    ? Math.round(totals.reduce((x, y) => x + y, 0) / totals.length)
+    : 0;
+  const chart = [...done]
+    .sort((x, y) => Date.parse(x.startedAt) - Date.parse(y.startedAt))
+    .slice(-10)
+    .map((a) => ({
+      id: a.id,
+      total: a.listeningScore + a.readingScore,
+      label: new Date(a.startedAt).toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+      }),
+    }));
+  const kindIcon = { FULL_TEST: Layers, MINI_TEST: Clock, PRACTICE: ListChecks };
   return (
     <>
-      <PageHead
-        eyebrow="EVERY ATTEMPT COUNTS"
+      <PageBanner
+        eyebrow="Kết quả học tập"
         title="Hành trình của bạn"
-        description="Mỗi lần làm bài đều là dữ liệu để lần sau tốt hơn."
-      />
+        description="Mỗi lần làm bài đều là dữ liệu để lần sau tốt hơn. Theo dõi điểm số và tiếp tục các bài đang làm."
+        photo="history"
+      >
+        {s.data && (
+          <div className="banner-stats">
+            <div>
+              <strong>
+                <CountUp value={s.data.length} />
+              </strong>
+              <span>lượt làm bài</span>
+            </div>
+            <div>
+              <strong>
+                <CountUp value={best} />
+              </strong>
+              <span>điểm cao nhất</span>
+            </div>
+            <div>
+              <strong>
+                <CountUp value={avg} />
+              </strong>
+              <span>điểm trung bình</span>
+            </div>
+          </div>
+        )}
+      </PageBanner>
       {s.loading ? (
         <Loading />
       ) : s.error ? (
         <ErrorBox message={s.error} retry={s.reload} />
       ) : s.data.length ? (
-        <div className="panel table-panel">
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Bài thi</th>
-                  <th>Thời gian</th>
-                  <th>Trạng thái</th>
-                  <th>Nghe / Đọc</th>
-                  <th>Tổng điểm</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {s.data.map((a) => (
-                  <tr key={a.id}>
-                    <td>
-                      <strong>{a.title}</strong>
-                      <small>{kindName(a.kind)}</small>
-                    </td>
-                    <td>{date(a.startedAt)}</td>
-                    <td>
-                      <span
-                        className={
-                          "badge " +
-                          (a.status === "IN_PROGRESS" ? "sand" : "sage")
-                        }
-                      >
-                        {statusName(a.status)}
-                      </span>
-                    </td>
-                    <td>
-                      {a.status === "IN_PROGRESS"
-                        ? "—"
-                        : `${a.listeningScore} / ${a.readingScore}`}
-                    </td>
-                    <td>
-                      <b>
-                        {a.status === "IN_PROGRESS"
-                          ? "—"
-                          : a.listeningScore + a.readingScore}
-                      </b>
-                    </td>
-                    <td>
-                      <Link
-                        className="text-link"
-                        to={
-                          (a.status === "IN_PROGRESS"
-                            ? "/attempts/"
-                            : "/results/") + a.id
-                        }
-                      >
-                        {a.status === "IN_PROGRESS"
-                          ? "Tiếp tục"
-                          : "Xem kết quả"}
-                        <ArrowUpRight size={16} />
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          <div className="history-overview">
+            <section className="panel chart-panel">
+              <div className="section-head compact">
+                <h2>
+                  <BarChart3 size={20} /> Điểm các lượt gần đây
+                </h2>
+                <span className="muted small">Thang điểm 990</span>
+              </div>
+              {chart.length ? (
+                <ScoreChart items={chart} target={user?.targetScore} />
+              ) : (
+                <p className="muted">Hoàn thành một bài để xem biểu đồ điểm.</p>
+              )}
+            </section>
+            <section className="panel status-panel">
+              <h2>Tình trạng</h2>
+              {[
+                ["Đã hoàn thành", s.data.filter((a) => a.status === "COMPLETED").length, "green"],
+                ["Đang làm dở", s.data.filter((a) => a.status === "IN_PROGRESS").length, "amber"],
+                ["Hết giờ", s.data.filter((a) => a.status === "EXPIRED").length, "red"],
+              ].map(([label, n, c]) => (
+                <div className={"status-row " + c} key={label}>
+                  <span>
+                    <i />
+                    {label}
+                  </span>
+                  <b>{n}</b>
+                  <div className="progress-bar">
+                    <i style={{ width: (n / s.data.length) * 100 + "%" }} />
+                  </div>
+                </div>
+              ))}
+              {s.data.some((a) => a.status === "IN_PROGRESS") && (
+                <Link
+                  className="resume-strip"
+                  to={"/attempts/" + s.data.find((a) => a.status === "IN_PROGRESS").id}
+                >
+                  <Play size={17} />
+                  Làm tiếp bài dở gần nhất
+                  <ArrowRight size={17} />
+                </Link>
+              )}
+            </section>
           </div>
-        </div>
+          <div className="panel table-panel">
+            <h2>Tất cả lượt làm bài</h2>
+            <div className="table-scroll">
+              <table className="history-table">
+                <thead>
+                  <tr>
+                    <th>Bài thi</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th>Nghe / Đọc</th>
+                    <th>Tổng điểm</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {s.data.map((a) => {
+                    const Icon = kindIcon[a.kind] || Layers;
+                    const total = a.listeningScore + a.readingScore;
+                    return (
+                      <tr key={a.id}>
+                        <td>
+                          <div className="attempt-title">
+                            <span className="attempt-icon">
+                              <Icon size={18} />
+                            </span>
+                            <div>
+                              <strong>{a.title}</strong>
+                              <small>{kindName(a.kind)}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>{date(a.startedAt)}</td>
+                        <td>
+                          <span
+                            className={
+                              "badge " +
+                              (a.status === "IN_PROGRESS"
+                                ? "sand"
+                                : a.status === "EXPIRED"
+                                  ? "danger"
+                                  : "sage")
+                            }
+                          >
+                            {statusName(a.status)}
+                          </span>
+                        </td>
+                        <td>
+                          {a.status === "IN_PROGRESS"
+                            ? "—"
+                            : `${a.listeningScore} / ${a.readingScore}`}
+                        </td>
+                        <td>
+                          {a.status === "IN_PROGRESS" ? (
+                            "—"
+                          ) : (
+                            <div className="score-cell">
+                              <b>{total}</b>
+                              <div className="progress-bar">
+                                <i style={{ width: (total / 990) * 100 + "%" }} />
+                              </div>
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <Link
+                            className="text-link"
+                            to={
+                              (a.status === "IN_PROGRESS"
+                                ? "/attempts/"
+                                : "/results/") + a.id
+                            }
+                          >
+                            {a.status === "IN_PROGRESS"
+                              ? "Tiếp tục"
+                              : "Xem kết quả"}
+                            <ArrowUpRight size={16} />
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       ) : (
         <Empty
           title="Chưa có lượt làm bài"
@@ -991,7 +1314,7 @@ export function Profile() {
   return (
     <>
       <PageHead
-        eyebrow="YOUR PERSONAL SPACE"
+        eyebrow="Tài khoản"
         title="Tài khoản của tôi"
         description="Một mục tiêu cụ thể giúp bạn nhìn rõ bước tiếp theo."
       />

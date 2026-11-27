@@ -56,7 +56,7 @@ export function Admin() {
   return (
     <>
       <PageHead
-        eyebrow="UTC TOEIC · MANAGEMENT"
+        eyebrow="Quản trị"
         title="Quản trị hệ thống"
         description="Quản lý nội dung học tập và theo dõi hoạt động của học viên."
       />

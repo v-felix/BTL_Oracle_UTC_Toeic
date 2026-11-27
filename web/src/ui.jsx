@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import {
   Link,
@@ -20,16 +21,16 @@ import {
   History,
   Settings,
   ShieldCheck,
-  GraduationCap,
   LogOut,
   ArrowUpRight,
   Menu,
   X,
   AlertCircle,
   CheckCircle2,
-  LoaderCircle,
 } from "lucide-react";
 import { api, resetCsrf } from "./api";
+import { Wordmark, EmptyArt, Photo, TrackPattern } from "./art";
+import { useAutoReveal, useScrolled, RevealText } from "./motion";
 export const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 const ToastContext = createContext();
@@ -114,8 +115,12 @@ export function useApi(path, deps = []) {
 }
 export function Loading() {
   return (
-    <div className="loading">
-      <LoaderCircle className="spin" size={25} />
+    <div className="loading" role="status">
+      <span className="loader" aria-hidden="true">
+        <i />
+        <i />
+        <i />
+      </span>
       <span>Đang tải dữ liệu…</span>
     </div>
   );
@@ -123,7 +128,9 @@ export function Loading() {
 export function ErrorBox({ message, retry }) {
   return (
     <div className="error-box" role="alert">
-      <AlertCircle size={22} />
+      <span className="error-mark" aria-hidden="true">
+        <AlertCircle size={22} />
+      </span>
       <div>
         <strong>Chưa tải được dữ liệu</strong>
         <p>{message}</p>
@@ -143,7 +150,7 @@ export function Empty({
 }) {
   return (
     <div className="empty">
-      <BookOpen size={34} />
+      <EmptyArt />
       <h3>{title}</h3>
       <p>{text}</p>
       {children}
@@ -167,16 +174,22 @@ export function Guard({ children, roles }) {
 }
 const links = [
   ["/", "Tổng quan", LayoutDashboard],
-  ["/exams", "Thư viện đề thi", Headphones],
-  ["/learning", "Góc học tập", BookOpen],
-  ["/vocabulary", "Sổ tay từ vựng", Library],
+  ["/exams", "Đề thi", Headphones],
+  ["/learning", "Học liệu", BookOpen],
+  ["/vocabulary", "Từ vựng", Library],
   ["/history", "Lịch sử làm bài", History],
 ];
 export function Layout({ children }) {
   const { user, logout } = useAuth(),
     [open, setOpen] = useState(false);
   const location = useLocation();
+  const mainRef = useRef(null);
+  const scrolled = useScrolled();
+  useAutoReveal(mainRef);
   useEffect(() => setOpen(false), [location.pathname]);
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [location.pathname]);
   useEffect(() => {
     if (!open) return;
     const closeOnEscape = (event) => {
@@ -185,8 +198,80 @@ export function Layout({ children }) {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [open]);
+  const navItems = [
+    ...links,
+    ...(user && user.role !== "STUDENT"
+      ? [["/admin", "Quản trị", ShieldCheck]]
+      : []),
+  ];
+  const current = navItems.find((x) =>
+    x[0] === "/"
+      ? location.pathname === "/"
+      : location.pathname.startsWith(x[0]),
+  );
+  const crumb = location.pathname.startsWith("/profile")
+    ? "Tài khoản của tôi"
+    : location.pathname.startsWith("/results")
+      ? "Kết quả bài thi"
+      : current?.[1];
   return (
     <div className="app-shell">
+      <div className="utility-bar">
+        <div className="container">
+          <span>Trường Đại học Giao thông vận tải</span>
+          <nav aria-label="Liên kết nhanh">
+            <Link to="/learning">Học liệu</Link>
+            <Link to="/vocabulary">Từ vựng</Link>
+            {user ? (
+              <button onClick={logout}>
+                Đăng xuất <LogOut size={14} />
+              </button>
+            ) : (
+              <Link to="/login">Đăng nhập</Link>
+            )}
+          </nav>
+        </div>
+      </div>
+      <header className={"site-header" + (scrolled ? " scrolled" : "")}>
+        <div className="container">
+          <Link to="/" className="brand" aria-label="UTC TOEIC, về trang chủ">
+            <Wordmark />
+          </Link>
+          <nav className="main-nav" aria-label="Điều hướng chính">
+            {navItems.map(([to, text]) => (
+              <NavLink end={to === "/"} key={to} to={to}>
+                {text}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="header-actions">
+            {user ? (
+              <Link to="/profile" className="user-menu">
+                <span className="avatar">
+                  {user.fullName?.split(" ").pop()?.[0] || "U"}
+                </span>
+                <span className="user-name">
+                  {user.fullName}
+                  <small>{user.roleName}</small>
+                </span>
+              </Link>
+            ) : (
+              <Link className="btn small" to="/login">
+                Đăng nhập
+              </Link>
+            )}
+            <button
+              className="icon-btn mobile-menu"
+              onClick={() => setOpen(!open)}
+              aria-label={open ? "Đóng menu điều hướng" : "Mở menu"}
+              aria-expanded={open}
+              aria-controls="mobile-navigation"
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
+        </div>
+      </header>
       {open && (
         <button
           className="nav-backdrop"
@@ -194,119 +279,125 @@ export function Layout({ children }) {
           aria-label="Đóng menu"
         />
       )}
-      <aside id="main-navigation" className={"sidebar " + (open ? "open" : "")}>
-        <Link to="/" className="brand">
-          <span className="brand-icon">
-            <GraduationCap size={25} />
-          </span>
-          <span>
-            UTC <b>TOEIC</b>
-            <small>HỌC ĐỀU · TIẾN XA</small>
-          </span>
-        </Link>
-        <span className="nav-caption">KHÔNG GIAN HỌC TẬP</span>
+      <aside
+        id="mobile-navigation"
+        className={"mobile-drawer " + (open ? "open" : "")}
+        aria-hidden={!open}
+      >
         <nav>
-          {links.map(([to, text, Icon]) => (
-            <NavLink end={to === "/"} key={to} to={to}>
-              <Icon size={20} />
+          {navItems.map(([to, text, Icon], i) => (
+            <NavLink
+              end={to === "/"}
+              key={to}
+              to={to}
+              tabIndex={open ? 0 : -1}
+              style={{ "--i": i }}
+            >
+              <Icon size={19} />
               {text}
             </NavLink>
           ))}
-        </nav>
-        <div className="sidebar-note">
-          <div className="tiny-dot" />
-          Mỗi ngày một bước tiến<p>20 phút hôm nay, thêm tự tin ngày mai.</p>
-          <Link to="/learning">
-            Bắt đầu học <ArrowUpRight size={15} />
-          </Link>
-        </div>
-        <nav className="sidebar-bottom">
-          {user && user.role !== "STUDENT" && (
-            <NavLink to="/admin">
-              <ShieldCheck size={20} />
-              Quản trị hệ thống
-            </NavLink>
-          )}
-          <NavLink to="/profile">
-            <Settings size={20} />
+          <NavLink to="/profile" tabIndex={open ? 0 : -1}>
+            <Settings size={19} />
             Tài khoản của tôi
           </NavLink>
         </nav>
-        <div className="sidebar-footer">
-          Đại học Giao thông vận tải
-          <br />
-          Dành cho hành trình TOEIC của bạn.
-        </div>
-      </aside>
-      <div className="main-shell">
-        <header className="topbar">
-          <button
-            className="icon-btn mobile-menu"
-            onClick={() => setOpen(!open)}
-            aria-label={open ? "Đóng menu điều hướng" : "Mở menu"}
-            aria-expanded={open}
-            aria-controls="main-navigation"
-          >
-            <Menu size={23} />
+        {user && (
+          <button className="btn secondary full" onClick={logout} tabIndex={open ? 0 : -1}>
+            Đăng xuất <LogOut size={16} />
           </button>
-          <div className="topbar-crumb">
-            Không gian học tập <span>/</span>{" "}
-            <b>
-              {location.pathname.startsWith("/admin")
-                ? "Quản trị"
-                : links.find((x) =>
-                    x[0] === "/"
-                      ? location.pathname === "/"
-                      : location.pathname.startsWith(x[0]),
-                  )?.[1] || "UTC TOEIC"}
-            </b>
+        )}
+      </aside>
+      {location.pathname !== "/" && crumb && (
+        <div className="breadcrumb">
+          <div className="container">
+            <Link to="/">Trang chủ</Link>
+            <span aria-hidden="true">/</span>
+            <b>{crumb}</b>
           </div>
-          <div className="topbar-right">
-            <span className="live-indicator">
-              <i />
-              Sẵn sàng học tập
-            </span>
+        </div>
+      )}
+      <main className="page-content" ref={mainRef}>
+        <div className="container page-enter" key={location.pathname}>
+          {children}
+        </div>
+      </main>
+      <footer className="site-footer">
+        <div className="container footer-grid">
+          <div className="footer-brand">
+            <Wordmark light />
+            <p>
+              Hệ thống ôn luyện và thi thử TOEIC dành cho sinh viên Trường Đại
+              học Giao thông vận tải.
+            </p>
+          </div>
+          <div>
+            <h4>Luyện thi</h4>
+            <Link to="/exams">Thư viện đề thi</Link>
+            <Link to="/history">Lịch sử làm bài</Link>
+          </div>
+          <div>
+            <h4>Học tập</h4>
+            <Link to="/learning">Học liệu theo Part</Link>
+            <Link to="/vocabulary">Sổ tay từ vựng</Link>
+          </div>
+          <div>
+            <h4>Tài khoản</h4>
+            <Link to="/profile">Thông tin cá nhân</Link>
             {user ? (
-              <>
-                <Link to="/profile" className="user-menu">
-                  <span className="avatar">
-                    {user.fullName?.split(" ").pop()?.[0] || "U"}
-                  </span>
-                  <span>
-                    {user.fullName}
-                    <small>{user.roleName}</small>
-                  </span>
-                </Link>
-                <button className="icon-btn" title="Đăng xuất" onClick={logout}>
-                  <LogOut size={18} />
-                </button>
-              </>
+              <button onClick={logout}>Đăng xuất</button>
             ) : (
-              <Link className="btn small" to="/login">
-                Đăng nhập <ArrowUpRight size={16} />
-              </Link>
+              <Link to="/register">Đăng ký</Link>
             )}
           </div>
-        </header>
-        <main className="page-content">{children}</main>
-        <footer className="footer">
-          <span>© 2026 UTC TOEIC. Học tập có định hướng.</span>
-          <span>Điểm thi thử dùng để tham khảo.</span>
-        </footer>
-      </div>
+        </div>
+        <div className="footer-legal">
+          <div className="container">
+            <span>© 2026 UTC TOEIC · Bài tập lớn môn Cơ sở dữ liệu Oracle</span>
+            <span>
+              Điểm quy đổi chỉ mang tính tham khảo, không thay thế kết quả
+              TOEIC chính thức.
+            </span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 export function PageHead({ eyebrow, title, description, children }) {
   return (
     <div className="page-head">
-      <div>
+      <div className="page-head-main">
         {eyebrow && <div className="eyebrow">{eyebrow}</div>}
         <h1>{title}</h1>
         {description && <p>{description}</p>}
       </div>
       {children && <div className="page-head-actions">{children}</div>}
     </div>
+  );
+}
+export function PageBanner({ eyebrow, title, description, photo, children }) {
+  return (
+    <section className="page-banner">
+      <div className="page-banner-media">
+        <Photo name={photo} width={1600} eager />
+      </div>
+      <div className="page-banner-shade" />
+      <TrackPattern overlay className="page-banner-lines" />
+      <div className="halftone" aria-hidden="true" />
+      <div className="page-banner-inner">
+        <div className="page-banner-copy">
+          {eyebrow && <span className="hero-kicker">{eyebrow}</span>}
+          <h1 aria-label={title}>
+            <span aria-hidden="true">
+              <RevealText text={title} delay={120} />
+            </span>
+          </h1>
+          {description && <p>{description}</p>}
+        </div>
+        {children && <div className="page-banner-aside">{children}</div>}
+      </div>
+    </section>
   );
 }
 export function Modal({ title, children, onClose, wide = false }) {

@@ -92,7 +92,7 @@ async function ownerSql(sql) {
   const secrets = JSON.parse(await readFile('.local/secrets.json', 'utf8'));
   assert.match(secrets.ownerPassword, /^[A-Za-z0-9!_#]+$/);
   // Password is supplied only on stdin; it is never a process argument or printed.
-  const input = `SET ECHO OFF VERIFY OFF DEFINE OFF\nWHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK\nCONNECT TOEIC_OWNER/"${secrets.ownerPassword}"@localhost:1521/orcl\n${sql}\nEXIT\n`;
+  const input = `SET ECHO OFF VERIFY OFF DEFINE OFF\nWHENEVER SQLERROR EXIT SQL.SQLCODE ROLLBACK\nCONNECT TOEIC_OWNER/"${secrets.ownerPassword}"@localhost:1521/FREEPDB1\n${sql}\nEXIT\n`;
   const output = await new Promise((resolve, reject) => {
     const child = spawn(process.env.SQLPLUS_EXE ?? 'sqlplus', ['-S', '/nolog'], { windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, NLS_LANG: 'AMERICAN_AMERICA.AL32UTF8' } });
     let stdout = '', stderr = '';

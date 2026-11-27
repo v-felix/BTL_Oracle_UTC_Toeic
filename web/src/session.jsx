@@ -17,6 +17,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { api } from "./api";
+import { CountUp } from "./motion";
 import {
   useApi,
   useToast,
@@ -203,10 +204,10 @@ export function ExamSession() {
       <header className="session-header">
         <button className="text-link" onClick={exit} disabled={busy}>
           <ChevronLeft size={20} />
-          Thoát và lưu lại
+          Thoát và lưu
         </button>
         <div>
-          <span className="eyebrow">ĐANG LÀM BÀI</span>
+          <span className="eyebrow">Đang làm bài</span>
           <h1>{attempt.title}</h1>
         </div>
         <div className={"session-timer " + (remaining < 300 ? "urgent" : "")}>
@@ -269,6 +270,7 @@ export function ExamSession() {
                 {q.passage && <div className="passage">{q.passage}</div>}
               </section>
             )}
+            <div className="question-body" key={q.id}>
             <h2 className="question-prompt">{q.prompt}</h2>
             <fieldset className="answer-options">
               <legend className="sr-only">
@@ -294,6 +296,7 @@ export function ExamSession() {
                 </label>
               ))}
             </fieldset>
+            </div>
           </article>
           <div className="question-navigation">
             <button
@@ -461,7 +464,7 @@ export function Result() {
   return (
     <>
       <PageHead
-        eyebrow="ONE MORE STEP FORWARD"
+        eyebrow="Kết quả bài thi"
         title="Bạn đã hoàn thành bài thi!"
         description={a.title}
       >
@@ -471,10 +474,9 @@ export function Result() {
       </PageHead>
       <section className="result-overview">
         <div className="result-score">
-          <Award size={30} />
-          <span>ĐIỂM QUY ĐỔI THAM KHẢO</span>
+          <span className="eyebrow light">Điểm quy đổi tham khảo</span>
           <strong>
-            {score}
+            <CountUp value={score} duration={1400} />
             <small>/ 990</small>
           </strong>
           <p>
@@ -487,7 +489,7 @@ export function Result() {
             <span>
               Listening
               <strong>
-                {a.listeningScore}
+                <CountUp value={a.listeningScore} />
                 <small> / 495</small>
               </strong>
             </span>
@@ -497,7 +499,7 @@ export function Result() {
             <span>
               Reading
               <strong>
-                {a.readingScore}
+                <CountUp value={a.readingScore} />
                 <small> / 495</small>
               </strong>
             </span>
@@ -543,7 +545,7 @@ export function Result() {
       </section>
       <div className="section-head">
         <div>
-          <span className="eyebrow">HIỂU ĐỂ TIẾN BỘ</span>
+          <span className="eyebrow">Xem lại bài làm</span>
           <h2>Xem lại đáp án</h2>
         </div>
         <div className="inline-fields">

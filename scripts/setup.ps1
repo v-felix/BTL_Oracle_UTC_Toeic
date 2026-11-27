@@ -1,5 +1,6 @@
 param([switch]$SkipInstall)
 $ErrorActionPreference = 'Stop'
+[Console]::InputEncoding = New-Object System.Text.UTF8Encoding($false)
 $projectRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 Set-Location -LiteralPath $projectRoot
 $localDir = Join-Path $projectRoot '.local'
@@ -12,7 +13,7 @@ function Invoke-OracleSql([string]$sql, [bool]$sys = $true) {
  $psi.RedirectStandardInput = $true; $psi.RedirectStandardOutput = $true; $psi.RedirectStandardError = $true
  $psi.StandardOutputEncoding = $utf8; $psi.StandardErrorEncoding = $utf8; $psi.EnvironmentVariables['NLS_LANG'] = '.AL32UTF8'
  $process = New-Object Diagnostics.Process; $process.StartInfo = $psi; [void]$process.Start()
- $connection = if ($sys) { 'connect / as sysdba' } else { 'connect TOEIC_OWNER/"' + $secrets.ownerPassword + '"@localhost:1521/orcl' }
+ $connection = if ($sys) { "connect / as sysdba`nalter session set container=FREEPDB1;" } else { 'connect TOEIC_OWNER/"' + $secrets.ownerPassword + '"@localhost:1521/FREEPDB1' }
  $process.StandardInput.WriteLine("set echo off verify off feedback off heading off pagesize 0 linesize 300 trimspool on`nwhenever oserror exit failure`nwhenever sqlerror exit sql.sqlcode rollback`n$connection`n$sql`nexit")
  $process.StandardInput.Close(); $outTask = $process.StandardOutput.ReadToEndAsync(); $errTask = $process.StandardError.ReadToEndAsync()
  $process.WaitForExit(); $output = $outTask.Result + $errTask.Result
@@ -35,7 +36,7 @@ if ($secrets.ownerPassword.Length -gt 30) {
  $secrets.appPassword='T!'+[Guid]::NewGuid().ToString('N').Substring(0,22)+'9a'
  [IO.File]::WriteAllText($secretsFile,($secrets | ConvertTo-Json),$utf8)
 }
-$baseFile = Invoke-OracleSql 'select name from v$datafile where file#=1;'
+$baseFile = Invoke-OracleSql 'select min(name) from v$datafile;'
 $dataFolder = [IO.Path]::GetDirectoryName($baseFile.Trim())
 $dataFile = (Join-Path $dataFolder 'toeic_data01.dbf').Replace("'","''")
 $bootstrap = @"
@@ -82,14 +83,14 @@ foreach ($view in @('VW_TOEIC_EXAM_SUMMARY','VW_TOEIC_USER_PROGRESS','VW_TOEIC_I
 [void](Invoke-OracleSql 'grant execute on pkg_toeic to TOEIC_RUNTIME;' $false)
 $compileErrors = Invoke-OracleSql "select count(*) from user_errors;" $false
 if ([int]$compileErrors -ne 0) { throw 'Oracle objects have compilation errors. Inspect USER_ERRORS before proceeding.' }
-$config = @{ConnectionStrings=@{Oracle=('User Id=TOEIC_APP;Password='+$secrets.appPassword+';Data Source=localhost:1521/orcl;Pooling=true;Min Pool Size=1;Max Pool Size=20;')}}
+$config = @{ConnectionStrings=@{Oracle=('User Id=TOEIC_APP;Password='+$secrets.appPassword+';Data Source=localhost:1521/FREEPDB1;Pooling=true;Min Pool Size=1;Max Pool Size=20;')}}
 [IO.File]::WriteAllText((Join-Path $projectRoot 'server/Toeic.Api/appsettings.Local.json'),($config | ConvertTo-Json -Depth 4),$utf8)
 if (-not $SkipInstall) { & npm.cmd install --no-fund; if ($LASTEXITCODE -ne 0) { throw 'npm install failed' } }
 & dotnet restore server/Toeic.Api/Toeic.Api.csproj
 if ($LASTEXITCODE -ne 0) { throw 'dotnet restore failed' }
 $previousConnection = $env:ConnectionStrings__Oracle
 try {
- $env:ConnectionStrings__Oracle = 'User Id=TOEIC_OWNER;Password='+$secrets.ownerPassword+';Data Source=localhost:1521/orcl;Pooling=false;'
+ $env:ConnectionStrings__Oracle = 'User Id=TOEIC_OWNER;Password='+$secrets.ownerPassword+';Data Source=localhost:1521/FREEPDB1;Pooling=false;'
  & dotnet run --project server/Toeic.Api --no-launch-profile -- --seed
  if ($LASTEXITCODE -ne 0) { throw 'Seed failed' }
 } finally { $env:ConnectionStrings__Oracle = $previousConnection }
