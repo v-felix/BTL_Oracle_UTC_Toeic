@@ -146,7 +146,7 @@ Quản trị viên sử dụng mục **Người dùng** để cập nhật thôn
 
 Thiết kế sử dụng khóa chính, khóa ngoại, UNIQUE, CHECK và index để kiểm soát tính toàn vẹn. View tổng hợp dữ liệu đề và tiến độ; trigger ghi nhật ký thay đổi nội dung; package `PKG_TOEIC` xử lý lượt thi và chấm điểm trong giao dịch. Tài khoản kết nối của website là `TOEIC_APP`, sử dụng role `TOEIC_RUNTIME` với quyền trên các đối tượng được cấp.
 
-Phần bài tập lớn có 20 truy vấn SQL cùng các kịch bản quản trị instance, tablespace, datafile, segment, extent, user, role, profile, sao lưu và phục hồi. Báo cáo, bảng đối chiếu yêu cầu và kết quả kiểm chứng được lưu trong `docs/`.
+Phần bài tập lớn có 20 truy vấn SQL cùng các kịch bản quản trị instance, tablespace, datafile, segment, extent, user, role, profile, sao lưu và phục hồi. Báo cáo, [bảng đối chiếu yêu cầu](docs/rubric.md) và kết quả kiểm chứng được lưu trong `docs/`.
 
 ## Phạm vi dữ liệu và kiểm chứng
 
